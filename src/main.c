@@ -35,7 +35,7 @@ bool processFile(const char* filePath, FileInfo* info) {
     for (size_t i = 0; i < strlen(source); ++i) {
         char c = source[i];
         switch (c) {
-            case '\n': info->lineCount++; break;
+            case '\n': info->lineCount++;
             default: info->charCount++; break;
         }
     }
