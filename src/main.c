@@ -46,6 +46,8 @@ bool processFile(const char* filePath, FileInfo* info) {
         }
     }
 
+    info->lineCount++;
+
     svFree(&sv);
     return true;
 }
@@ -54,18 +56,20 @@ int main(int argc, const char** argv) {
     const char* programName = argv[0];
 
     if (argc < 2) {
-        fprintf(stderr, "USAGE: %s <FILE>\n", programName);
+        fprintf(stderr, "USAGE: %s <FILES...>\n", programName);
         return 1;
     }
 
-    const char* filePath = argv[1];
-    FileInfo info = {0};
-    bool didProcess = processFile(filePath, &info);
-    if (!didProcess) {
-        fprintf(stderr, "Failed to parse file");
-        return 1;
-    }
+    for (size_t i = 1; i < argc; ++i) {
+        const char* filePath = argv[i];
+        FileInfo info = {0};
+        bool didProcess = processFile(filePath, &info);
+        if (!didProcess) {
+            fprintf(stderr, "Failed to parse file");
+            return 1;
+        }
 
-    printf("[%s]\n    Lines: %zu\n    Characters: %zu\n", filePath, info.lineCount, info.charCount);
+        printf("[%s]\n    Lines: %zu\n    Characters: %zu\n", filePath, info.lineCount, info.charCount);
+    }
     return 0;
 }
