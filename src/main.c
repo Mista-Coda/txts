@@ -1,3 +1,4 @@
+#include "stringView.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -29,18 +30,23 @@ char* readEntireFile(const char* path) {
 }
 
 bool processFile(const char* filePath, FileInfo* info) {
-    char* source = readEntireFile(filePath);
-    if (source == NULL) { return false; }
+    char* sourceCString = readEntireFile(filePath);
+    if (sourceCString == NULL) { return false; }
 
-    for (size_t i = 0; i < strlen(source); ++i) {
-        char c = source[i];
+    StringView sv = {0};
+    svSetStrAndFree(&sv, sourceCString);
+
+    for (size_t i = 0; i < sv.length; ++i) {
+        char c = sv.characters[i];
         switch (c) {
-            case '\n': info->lineCount++;
+            case '\n':
+                info->lineCount++;
+                /* fall through */
             default: info->charCount++; break;
         }
     }
 
-    free(source);
+    svFree(&sv);
     return true;
 }
 
