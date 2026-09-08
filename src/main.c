@@ -7,6 +7,7 @@
 typedef struct {
     size_t lineCount;
     size_t charCount;
+    size_t wordCount;
 } FileInfo;
 
 char* readEntireFile(const char* path) {
@@ -39,14 +40,26 @@ bool processFile(const char* filePath, FileInfo* info) {
     for (size_t i = 0; i < sv.length; ++i) {
         char c = sv.characters[i];
         switch (c) {
-            case '\n':
+            case '\n': {
                 info->lineCount++;
-                /* fall through */
+                info->charCount++;
+                if (i > 0 && sv.characters[i - 1] != ' ') {
+                    info->wordCount++;
+                }
+            } break;
+            case ' ': {
+                info->lineCount++;
+                info->charCount++;
+                if (i > 0 && sv.characters[i - 1] != ' ') {
+                    info->wordCount++;
+                }
+            } break;
             default: info->charCount++; break;
         }
     }
 
     info->lineCount++;
+    info->wordCount++;
 
     svFree(&sv);
     return true;
@@ -69,7 +82,7 @@ int main(int argc, const char** argv) {
             return 1;
         }
 
-        printf("[%s]\n    Lines: %zu\n    Characters: %zu\n", filePath, info.lineCount, info.charCount);
+        printf("[%s]\n    Lines: %zu\n    Characters: %zu\n    Words: %zu\n", filePath, info.lineCount, info.charCount, info.wordCount);
     }
     return 0;
 }

@@ -1,0 +1,1 @@
+- [ ] Fix edge case where a blank line cuases incorrect results
