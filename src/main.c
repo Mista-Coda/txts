@@ -75,7 +75,9 @@ int main(int argc, const char** argv) {
     const char* programName = argv[0];
 
     if (argc < 2) {
-        fprintf(stderr, "USAGE: %s <FILES...>\n", programName);
+        fprintf(stderr, "USAGE: %s [OPTIONS] Files...\n\n", programName);
+        fprintf(stderr, "OPTIONS:\n");
+        fprintf(stderr, "    -t, --total         Show the combined total of all the files\n");
         return 1;
     }
 
