@@ -76,7 +76,7 @@ int main(int argc, const char** argv) {
         return 1;
     }
 
-    for (size_t i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         const char* filePath = argv[i];
         FileInfo info = {0};
         bool didProcess = processFile(filePath, &info);
