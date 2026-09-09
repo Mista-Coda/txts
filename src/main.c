@@ -30,6 +30,14 @@ char* readEntireFile(const char* path) {
     return source;
 }
 
+bool isWhitespace(char c) {
+    char whitespaceChars[] = {
+        ' ', '\n', '\0', '\t',
+    };
+
+    return strchr(whitespaceChars, c) != NULL;
+}
+
 bool processFile(const char* filePath, FileInfo* info) {
     char* sourceCString = readEntireFile(filePath);
     if (sourceCString == NULL) { return false; }
@@ -39,22 +47,17 @@ bool processFile(const char* filePath, FileInfo* info) {
 
     for (size_t i = 0; i < sv.length; ++i) {
         char c = sv.characters[i];
-        switch (c) {
-            case '\n': {
-                info->lineCount++;
-                info->charCount++;
-                if (i > 0 && sv.characters[i - 1] != ' ') {
-                    info->wordCount++;
-                }
-            } break;
-            case ' ': {
-                info->lineCount++;
-                info->charCount++;
-                if (i > 0 && sv.characters[i - 1] != ' ') {
-                    info->wordCount++;
-                }
-            } break;
-            default: info->charCount++; break;
+        info->charCount++;
+
+        if (c == '\n') {
+            info->lineCount++;
+        }
+
+        if (isWhitespace(c)) {
+            info->charCount++;
+            if (i > 0 && !isWhitespace(sv.characters[i - 1])) {
+                info->wordCount++;
+            }
         }
     }
 
