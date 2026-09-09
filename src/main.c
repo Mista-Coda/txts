@@ -10,6 +10,10 @@ typedef struct {
     size_t wordCount;
 } FileInfo;
 
+typedef struct {
+    bool totalOnly;
+} ProcessingOptions;
+
 char* readEntireFile(const char* path) {
     FILE *file = fopen(path, "r");
     if (file == NULL) {
@@ -54,7 +58,6 @@ bool processFile(const char* filePath, FileInfo* info) {
         }
 
         if (isWhitespace(c)) {
-            info->charCount++;
             if (i > 0 && !isWhitespace(sv.characters[i - 1])) {
                 info->wordCount++;
             }
@@ -76,16 +79,51 @@ int main(int argc, const char** argv) {
         return 1;
     }
 
+    ProcessingOptions opts = {0};
+    
+    for (int i = 1; i < argc; ++i) {
+        StringView sv = {0};
+        svSetStr(&sv, argv[i]);
+
+        if (!svStartsWith(&sv, "-")) {
+            svFree(&sv);
+            continue;
+        };
+
+        if (svMatchesCStr(&sv, "--total") || svMatchesCStr(&sv, "-t")) {
+            opts.totalOnly = true;
+            svFree(&sv);
+            continue;
+        }
+
+        svFree(&sv);
+    }
+
+    FileInfo total = {0};
+
     for (int i = 1; i < argc; ++i) {
         const char* filePath = argv[i];
+        // Ignore all flags
+        if (filePath[0] == '-') continue;
+
         FileInfo info = {0};
         bool didProcess = processFile(filePath, &info);
         if (!didProcess) {
-            fprintf(stderr, "Failed to parse file");
+            fprintf(stderr, "Failed to parse file: %s", filePath);
             return 1;
         }
 
-        printf("[%s]\n    Lines: %zu\n    Characters: %zu\n    Words: %zu\n", filePath, info.lineCount, info.charCount, info.wordCount);
+        if (!opts.totalOnly) {
+            printf("[%s]\n    Lines: %zu\n    Characters: %zu\n    Words: %zu\n", filePath, info.lineCount, info.charCount, info.wordCount);
+        } else {
+            total.charCount += info.charCount;
+            total.lineCount += info.lineCount;
+            total.wordCount += info.wordCount;
+        }
+    }
+
+    if (opts.totalOnly) {
+        printf("[%s]\n    Lines: %zu\n    Characters: %zu\n    Words: %zu\n", "TOTAL", total.lineCount, total.charCount, total.wordCount);
     }
     return 0;
 }

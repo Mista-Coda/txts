@@ -1,3 +1,3 @@
 - [x] Fix edge case where a blank line cuases incorrect results
 - [ ] Option to include/exclude whitespaces being counted in the final character count.
-- [ ] Option for displaying a total across all files rather than individually.
+- [x] Option for displaying a total across all files rather than individually.
