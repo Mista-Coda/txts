@@ -71,17 +71,22 @@ bool processFile(const char* filePath, FileInfo* info) {
     return true;
 }
 
+void printUsage(const char* programName) {
+    fprintf(stderr, "USAGE: %s [OPTIONS] Files...\n\n", programName);
+    fprintf(stderr, "OPTIONS:\n");
+    fprintf(stderr, "    -t, --total         Show the combined total of all the files\n");
+}
+
 int main(int argc, const char** argv) {
     const char* programName = argv[0];
 
     if (argc < 2) {
-        fprintf(stderr, "USAGE: %s [OPTIONS] Files...\n\n", programName);
-        fprintf(stderr, "OPTIONS:\n");
-        fprintf(stderr, "    -t, --total         Show the combined total of all the files\n");
+        printUsage(programName);
         return 1;
     }
 
     ProcessingOptions opts = {0};
+    size_t filesInputted = 0;
     
     for (int i = 1; i < argc; ++i) {
         StringView sv = {0};
@@ -89,6 +94,7 @@ int main(int argc, const char** argv) {
 
         if (!svStartsWith(&sv, "-")) {
             svFree(&sv);
+            filesInputted++;
             continue;
         };
 
@@ -99,6 +105,11 @@ int main(int argc, const char** argv) {
         }
 
         svFree(&sv);
+    }
+
+    if (filesInputted < 1) {
+        printUsage(programName);
+        return 1;
     }
 
     FileInfo total = {0};
